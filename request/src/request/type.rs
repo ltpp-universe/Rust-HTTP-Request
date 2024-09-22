@@ -1,5 +1,5 @@
 use crate::{methods::methods::Methods, protocol::protocol::Protocol};
-use global_type::r#type::{Body, Header};
+use global_type::r#type::r#type::{Body, Header};
 
 pub(crate) static HTTP_BR: &str = "\r\n";
 
