@@ -1,18 +1,18 @@
 use super::{
     error::Error,
-    r#type::{HttpRequest, HttpRequestBuilder, HTTP_BR},
+    r#type::{HttpRequest, HttpRequestBuilder, Methods, Protocol, HTTP_BR},
 };
-use crate::r#type::r#type::{Body, Header};
-use crate::url::r#type::Url;
+use global_type::r#type::{Body, Header};
+use request_url::r#type::Url;
 use std::io::{Read, Write};
 use std::{collections::HashMap, net::TcpStream};
 
 impl HttpRequest {
-    fn get_protocol(&self) -> String {
+    fn get_protocol(&self) -> Protocol {
         self.protocol.clone()
     }
 
-    fn get_methods(&self) -> String {
+    fn get_methods(&self) -> Methods {
         self.methods.clone()
     }
 
@@ -92,13 +92,17 @@ impl HttpRequest {
 
     pub fn send(&self) -> Result<String, Error> {
         if let Ok(url_obj) = self.parse_url() {
-            let methods: String = self.get_methods();
+            let methods = self.get_methods();
             let host: String = url_obj.host.clone().unwrap_or_default();
             let port: u16 = url_obj.port.clone().unwrap_or_default();
             if let Ok(mut stream) = TcpStream::connect((host, port)) {
-                let response: Result<String, Error> = match methods.to_uppercase().as_str() {
-                    "GET" => Ok(self.send_get_request(&mut stream, &url_obj.clone())),
-                    "POST" => Ok(self.send_post_request(&mut stream, &url_obj)),
+                let response: Result<String, Error> = match methods {
+                    _methods if _methods.is_get() => {
+                        Ok(self.send_get_request(&mut stream, &url_obj.clone()))
+                    }
+                    _methods if _methods.is_post() => {
+                        Ok(self.send_post_request(&mut stream, &url_obj))
+                    }
                     _ => Err(Error::RequestError),
                 };
                 response
@@ -114,9 +118,9 @@ impl HttpRequest {
 impl Default for HttpRequest {
     fn default() -> HttpRequest {
         HttpRequest {
-            methods: String::new(),
+            methods: Methods::new(),
             url: String::new(),
-            protocol: String::new(),
+            protocol: Protocol::new(),
             header: HashMap::new(),
             body: HashMap::new(),
         }
@@ -133,7 +137,7 @@ impl Default for HttpRequestBuilder {
 }
 
 impl HttpRequestBuilder {
-    pub fn set_protocol(&mut self, protocol: String) -> &mut Self {
+    pub fn set_protocol(&mut self, protocol: Protocol) -> &mut Self {
         self.tmp.protocol = protocol;
         self
     }
@@ -142,13 +146,13 @@ impl HttpRequestBuilder {
         HttpRequestBuilder::default()
     }
 
-    pub fn set_methods(&mut self, methods: String) -> &mut Self {
+    pub fn set_methods(&mut self, methods: Methods) -> &mut Self {
         self.tmp.methods = methods;
         self
     }
 
-    pub fn set_url(&mut self, url: String) -> &mut Self {
-        self.tmp.url = url;
+    pub fn set_url(&mut self, url: &str) -> &mut Self {
+        self.tmp.url = url.to_owned();
         self
     }
 

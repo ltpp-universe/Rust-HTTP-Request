@@ -1,0 +1,14 @@
+[package]
+name = "request"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+path = "./src/lib.rs"
+
+[dependencies]
+url = { workspace = true }
+response = { workspace = true }
+request_url = { workspace = true }
+global_type = { workspace = true }
+utils = { workspace = true }

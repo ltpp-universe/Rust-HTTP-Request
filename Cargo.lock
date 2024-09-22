@@ -12,11 +12,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "global_type"
+version = "0.1.0"
+
+[[package]]
 name = "http-request"
 version = "0.1.0"
-dependencies = [
- "url",
-]
 
 [[package]]
 name = "idna"
@@ -33,6 +34,28 @@ name = "percent-encoding"
 version = "2.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e3148f5046208a5d56bcfc03053e3ca6334e51da8dfb19b6cdc8b306fae3283e"
+
+[[package]]
+name = "request"
+version = "0.1.0"
+dependencies = [
+ "global_type",
+ "request_url",
+ "response",
+ "url",
+ "utils",
+]
+
+[[package]]
+name = "request_url"
+version = "0.1.0"
+dependencies = [
+ "url",
+]
+
+[[package]]
+name = "response"
+version = "0.1.0"
 
 [[package]]
 name = "tinyvec"
@@ -74,3 +97,7 @@ dependencies = [
  "idna",
  "percent-encoding",
 ]
+
+[[package]]
+name = "utils"
+version = "0.1.0"

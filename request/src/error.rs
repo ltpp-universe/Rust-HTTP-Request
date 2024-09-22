@@ -5,6 +5,7 @@ pub enum Error {
     InvalidUrl,
     TcpStreamConnectError,
     RequestError,
+    MethodsNotSupport,
 }
 
 impl StdError for Error {}
@@ -15,6 +16,7 @@ impl fmt::Display for Error {
             Error::InvalidUrl => write!(f, "Invalid URL"),
             Error::TcpStreamConnectError => write!(f, "Tcp Stream Connect Error"),
             Error::RequestError => write!(f, "Request Error"),
+            Error::MethodsNotSupport => write!(f, "Methods Not Support"),
         }
     }
 }
