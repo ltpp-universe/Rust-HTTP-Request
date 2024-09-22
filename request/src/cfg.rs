@@ -1,5 +1,5 @@
 use super::r#type::HttpRequest;
-use request::r#type::{HttpRequestBuilder, Methods, Protocol};
+use super::r#type::{HttpRequestBuilder, Methods, Protocol};
 
 pub fn _request_builder() -> HttpRequest {
     use std::collections::HashMap;
