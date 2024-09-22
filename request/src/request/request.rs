@@ -2,7 +2,7 @@ use super::r#type::{HttpRequest, HttpRequestBuilder, HTTP_BR};
 use crate::error::error::Error;
 use crate::{methods::methods::Methods, protocol::protocol::Protocol};
 use global_type::r#type::{Body, Header};
-use request_url::r#type::Url;
+use request_url::r#type::r#type::Url;
 use std::io::{Read, Write};
 use std::{collections::HashMap, net::TcpStream};
 

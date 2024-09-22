@@ -1,5 +1,5 @@
-use super::error::Error;
-use super::r#type::Url;
+use crate::error::error::Error;
+use crate::r#type::r#type::Url;
 use url::Url as UrlParser;
 
 impl Default for Url {
