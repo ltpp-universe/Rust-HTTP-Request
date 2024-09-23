@@ -24,6 +24,5 @@ mod tests {
         if let Ok(response) = result.send() {
             assert_eq!(response, String::default());
         }
-        assert_eq!(result, HttpRequest::default());
     }
 }

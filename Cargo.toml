@@ -9,7 +9,8 @@ members = [
     "response",
     "request_url",
     "global_type",
-    "utils",
+    "utils", 
+    "example",
 ]
 
 [workspace.dependencies]
@@ -22,3 +23,5 @@ global_type = {path = "./global_type" }
 
 [lib]
 path = "./src/lib.rs"
+
+

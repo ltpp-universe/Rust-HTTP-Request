@@ -1,5 +1,5 @@
 use crate::error::error::Error;
-use crate::r#type::r#type::{HttpRequest, HttpRequestBuilder, HTTP_BR};
+use crate::r#type::r#type::{HttpRequest, HttpRequestBuilder, HTTP_BR, HTTP_DOUBLE_BR};
 use crate::{methods::methods::Methods, protocol::protocol::Protocol};
 use global_type::r#type::r#type::{Body, Header};
 use request_url::r#type::r#type::Url;
@@ -85,16 +85,48 @@ impl HttpRequest {
     }
 
     fn read_response(&self, stream: &mut TcpStream) -> String {
+        let mut buffer: [u8; 10240] = [0; 10240];
         let mut response: String = String::new();
-        stream.read_to_string(&mut response).unwrap();
+        let mut headers_done: bool = false;
+        let mut content_length: usize = 0;
+        while let Ok(n) = stream.read(&mut buffer) {
+            if n == 0 {
+                break;
+            }
+            response.push_str(&String::from_utf8_lossy(&buffer[..n]));
+            if !headers_done {
+                if let Some(pos) = response.find(HTTP_DOUBLE_BR) {
+                    headers_done = true;
+                    if let Some(length_pos) = response.to_lowercase().find("content-length:") {
+                        let start = length_pos + "content-length:".len();
+                        if let Some(end) = response[start..].find(HTTP_BR) {
+                            content_length =
+                                response[start..start + end].trim().parse().unwrap_or(0);
+                        }
+                    }
+                    response = response.split_off(pos + 4);
+                }
+            }
+            if headers_done && response.len() >= content_length {
+                break;
+            }
+        }
         response
+    }
+
+    fn get_port(&self, port: u16) -> u16 {
+        if port != 0 {
+            return port;
+        }
+        let protocol = self.get_protocol();
+        protocol.get_port()
     }
 
     pub fn send(&self) -> Result<String, Error> {
         if let Ok(url_obj) = self.parse_url() {
             let methods: Methods = self.get_methods();
             let host: String = url_obj.host.clone().unwrap_or_default();
-            let port: u16 = url_obj.port.clone().unwrap_or_default();
+            let port: u16 = self.get_port(url_obj.port.clone().unwrap_or_default());
             if let Ok(mut stream) = TcpStream::connect((host, port)) {
                 let response: Result<String, Error> = match methods {
                     _methods if _methods.is_get() => {

@@ -29,4 +29,11 @@ impl Protocol {
     pub fn is_https(&self) -> bool {
         self.value() == Protocol::HTTPS.value()
     }
+
+    pub fn get_port(&self) -> u16 {
+        match self {
+            Protocol::HTTP => 80,
+            Protocol::HTTPS => 443,
+        }
+    }
 }

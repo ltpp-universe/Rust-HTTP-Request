@@ -4,6 +4,7 @@ use crate::{methods::methods::Methods, protocol::protocol::Protocol};
 use global_type::r#type::r#type::{Body, Header};
 
 pub(crate) static HTTP_BR: &str = "\r\n";
+pub(crate) static HTTP_DOUBLE_BR: &str = "\r\n\r\n";
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct HttpRequest {
