@@ -1,4 +1,4 @@
-use super::r#type::HttpStatusCode;
+use crate::r#type::r#type::HttpStatusCode;
 
 impl HttpStatusCode {
     pub fn code(&self) -> u16 {

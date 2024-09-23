@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use super::r#type::HttpResponse;
+use crate::r#type::r#type::HttpResponse;
 
 impl HttpResponse {
     pub fn new() -> Self {
