@@ -1,6 +1,6 @@
 use crate::methods::methods::Methods;
 use crate::protocol::protocol::Protocol;
-use crate::request::r#type::{HttpRequest, HttpRequestBuilder};
+use crate::r#type::r#type::{HttpRequest, HttpRequestBuilder};
 
 pub fn _request_builder() -> HttpRequest {
     use std::collections::HashMap;

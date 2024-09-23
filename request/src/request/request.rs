@@ -1,30 +1,31 @@
-use super::r#type::{HttpRequest, HttpRequestBuilder, HTTP_BR};
 use crate::error::error::Error;
+use crate::r#type::r#type::{HttpRequest, HttpRequestBuilder, HTTP_BR};
 use crate::{methods::methods::Methods, protocol::protocol::Protocol};
 use global_type::r#type::r#type::{Body, Header};
 use request_url::r#type::r#type::Url;
 use std::io::{Read, Write};
+use std::sync::Arc;
 use std::{collections::HashMap, net::TcpStream};
 
 impl HttpRequest {
     fn get_protocol(&self) -> Protocol {
-        self.protocol.clone()
+        self.protocol.as_ref().clone()
     }
 
     fn get_methods(&self) -> Methods {
-        self.methods.clone()
+        self.methods.as_ref().clone()
     }
 
     fn get_url(&self) -> String {
-        self.url.clone()
+        self.url.as_ref().clone()
     }
 
     fn get_header(&self) -> Header {
-        self.header.clone()
+        self.header.as_ref().clone()
     }
 
     fn get_body(&self) -> Body {
-        self.body.clone()
+        self.body.as_ref().clone()
     }
 
     fn parse_url(&self) -> Result<Url, Error> {
@@ -91,7 +92,7 @@ impl HttpRequest {
 
     pub fn send(&self) -> Result<String, Error> {
         if let Ok(url_obj) = self.parse_url() {
-            let methods = self.get_methods();
+            let methods: Methods = self.get_methods();
             let host: String = url_obj.host.clone().unwrap_or_default();
             let port: u16 = url_obj.port.clone().unwrap_or_default();
             if let Ok(mut stream) = TcpStream::connect((host, port)) {
@@ -117,11 +118,11 @@ impl HttpRequest {
 impl Default for HttpRequest {
     fn default() -> HttpRequest {
         HttpRequest {
-            methods: Methods::new(),
-            url: String::new(),
-            protocol: Protocol::new(),
-            header: HashMap::new(),
-            body: HashMap::new(),
+            methods: Arc::new(Methods::new()),
+            url: Arc::new(String::new()),
+            protocol: Arc::new(Protocol::new()),
+            header: Arc::new(HashMap::new()),
+            body: Arc::new(HashMap::new()),
         }
     }
 }
@@ -137,7 +138,7 @@ impl Default for HttpRequestBuilder {
 
 impl HttpRequestBuilder {
     pub fn set_protocol(&mut self, protocol: Protocol) -> &mut Self {
-        self.tmp.protocol = protocol;
+        self.tmp.protocol = Arc::new(protocol);
         self
     }
 
@@ -146,25 +147,29 @@ impl HttpRequestBuilder {
     }
 
     pub fn set_methods(&mut self, methods: Methods) -> &mut Self {
-        self.tmp.methods = methods;
+        self.tmp.methods = Arc::new(methods);
         self
     }
 
     pub fn set_url(&mut self, url: &str) -> &mut Self {
-        self.tmp.url = url.to_owned();
+        self.tmp.url = Arc::new(url.to_owned());
         self
     }
 
     pub fn set_header(&mut self, header: &Header) -> &mut Self {
-        for (key, value) in header {
-            self.tmp.header.insert(key.clone(), value.clone());
+        if let Some(tmp_header) = Arc::get_mut(&mut self.tmp.header) {
+            for (key, value) in header {
+                tmp_header.insert(key.clone(), value.clone());
+            }
         }
         self
     }
 
     pub fn set_body(&mut self, body: &Body) -> &mut Self {
-        for (key, value) in body {
-            self.tmp.body.insert(key.clone(), value.clone());
+        if let Some(tmp_body) = Arc::get_mut(&mut self.tmp.body) {
+            for (key, value) in body {
+                tmp_body.insert(key.clone(), value.clone());
+            }
         }
         self
     }
